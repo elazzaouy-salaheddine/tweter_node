@@ -3,6 +3,8 @@ const app = express();
 const port = 3003;
 const middleware = require("./middleware");
 const path = require("path");
+const bodyParser = require("body-parser");
+const mongoose = require("./database");
 const server = app.listen(port, () =>
   console.log("server is running in port :" + port)
 );
@@ -13,6 +15,7 @@ app.set("views", "views");
 // static files
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(bodyParser.urlencoded({ extended: false }));
 // Routes
 
 const loginRoute = require("./routes/loginRoutes");

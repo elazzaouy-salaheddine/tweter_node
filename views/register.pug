@@ -2,11 +2,12 @@ extends layouts\log_in_layout.pug
 block content   
    .loginContainer
         h1 login  
-        form#registerForm(action="", method="post", onsubmit="event.preventDefault();validateform() ") 
-            input(type="text", name="firstname", placeholder="first name" required="")
-            input(type="text", name="lastname", placeholder="last name" required="")
-            input(type="text", name="username", placeholder="username" required="")
-            input(type="email", name="email", placeholder="email" required="")
+        form#registerForm(action="", method="post",  onsubmit="event.preventDefault();validateform() ")
+            p.errorMessage #{errosMessage} 
+            input(type="text", name="firstname", value=firstname placeholder="first name" required="")
+            input(type="text", name="lastname", value=lastname  placeholder="last name" required="")
+            input(type="text", name="username", value=username  placeholder="username" required="")
+            input(type="email", name="email", value=email placeholder="email" required="")
             input#password1(type="password", name="password1", placeholder="password" required="")
             input#password2(type="password", name="password2", placeholder="confirm password" required="")
             input(type="submit", value="register")
