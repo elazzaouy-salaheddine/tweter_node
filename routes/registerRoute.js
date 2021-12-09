@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+const User = require("../schemas/UserSchema");
 
 app.set("view engine", "pug");
 app.set("views", "views");
@@ -9,24 +11,41 @@ app.set("views", "views");
 app.use(bodyParser.urlencoded({ extended: false }));
 
 router.get("/", (req, res, next) => {
-  var payload = {
-    pageTitle: "register  page from pug",
-  };
-  res.status(200).render("register", payload);
+  res.status(200).render("register");
 });
 
-router.post("/", (req, res, next) => {
-  var payload = req.body;
-  var firstname = req.body.firstname.trim();
-  var lastname = req.body.lastname.trim();
+router.post("/", async (req, res, next) => {
+  var firstName = req.body.firstName.trim();
+  var lastName = req.body.lastName.trim();
   var username = req.body.username.trim();
   var email = req.body.email.trim();
   var password = req.body.password;
 
-  if (firstname && lastname && username && password && email) {
+  var payload = req.body;
+
+  if (firstName && lastName && username && email && password) {
+    var user = await User.findOne({
+      $or: [{ username: username }, { email: email }],
+    });
+
+    if (user == null) {
+      var data = req.body;
+      data.password = await bcrypt.hash(password, 10);
+      User.create(data).then((user) => {
+        console.log(user);
+      });
+    } else {
+      if (email == user.email) {
+        payload.errorMessage = "email already exist";
+      } else {
+        payload.errorMessage = "username already exist";
+      }
+      res.status(200).render("register", payload);
+    }
   } else {
-    payload.errosMessage = "make sure eache field are valide";
+    payload.errorMessage = "Make sure each field has a valid value.";
     res.status(200).render("register", payload);
   }
 });
+
 module.exports = router;
